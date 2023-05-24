@@ -42,7 +42,7 @@ public class DBRouterJoinPoint {
     }
 
     /**
-     * 所有需要分库分表的擦做，都需要使用自定义注解进行拦截，拦截后读取方法中的入参字段，再根据字段进行路由操作
+     * 所有需要分库分表的操作，都需要使用自定义注解进行拦截，拦截后读取方法中的入参字段，再根据字段进行路由操作
      * 1. dbRouter.key() 确定根据哪个字段进行路由
      * 2. getAttrValue 根据数据库路由字段，从入参中读取出对应的值。比如路由 key 是 uId，那么就从入参对象 Obj 中获取到 uId 的值。
      * 3. dbRouterStrategy.doRouter(dbKeyAttr) 路由策略根据具体的路由值进行处理
@@ -56,12 +56,13 @@ public class DBRouterJoinPoint {
      */
     @Around("aopPoint() && @annotation(dbRouter)")
     public Object doRouter(ProceedingJoinPoint jp, DBRouter dbRouter) throws Throwable {
+        //计算路由时设置的key，就是我们希望用哪个实例字段的值计算路由
         String dbKey = dbRouter.key();
         if (StringUtils.isBlank(dbKey) && StringUtils.isBlank(dbRouterConfig.getRouterKey())) {
             throw new RuntimeException("annotation DBRouter key is null！");
         }
         dbKey = StringUtils.isNotBlank(dbKey) ? dbKey : dbRouterConfig.getRouterKey();
-        // 路由属性
+        // 路由属性，其中jp.getArgs()就是获取被代理执行方法的参数
         String dbKeyAttr = getAttrValue(dbKey, jp.getArgs());
         // 路由策略
         dbRouterStrategy.doRouter(dbKeyAttr);
