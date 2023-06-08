@@ -46,7 +46,7 @@ public class DBRouterStrategyHashCode implements IDBRouterStrategy {
         //这里使用ThreadLocal的好处在于，每个线程独有一份，再线程上下文中都可以进行获取。
         DBContextHolder.setDBKey(String.format("%02d", dbIdx));
         DBContextHolder.setTBKey(String.format("%03d", tbIdx));
-        logger.debug("数据库路由 dbIdx：{} tbIdx：{}",  dbIdx, tbIdx);
+        logger.info("数据库路由 dbIdx：{} tbIdx：{}",  dbIdx, tbIdx);
     }
 
     @Override
